@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find your BaZi. See your pendant.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Alex+Brush&family=Noto+Serif+SC:wght@500;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f2ede2; --panel:#faf7ef; --ink:#2c2a2e; --muted:#7c7669;
+    --line:#e6ddc9; --lav-bg:#efeaf7; --lav-line:#ddd3f0; --lav:#7a63a8; --lav-dark:#4d3f6b;
+    --gold:#c7a253; --silver:#9aa0a6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:'Cormorant Garamond', serif; background:var(--cream); color:var(--ink); display:flex; justify-content:center; padding:56px 20px 90px;}
+  .wrap{width:100%; max-width:760px;}
+
+  h1{font-size:44px; line-height:1.08; font-weight:600; margin:0 0 18px; letter-spacing:0.01em;}
+  .lede{font-size:17px; color:var(--muted); line-height:1.55; margin:0 0 32px; max-width:560px;}
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:26px 28px; margin-bottom:26px;}
+
+  label{display:block; font-size:13px; font-weight:600; margin:20px 0 8px;}
+  label:first-of-type{margin-top:0;}
+  .helper{font-size:13px; color:var(--muted); margin-top:6px; line-height:1.45;}
+
+  input[type=text], input[type=date], input[type=time], select{
+    width:100%; font-family:'Cormorant Garamond', serif; font-size:17px;
+    padding:12px 14px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--ink);
+  }
+  input:focus, select:focus{outline:2px solid var(--gold); outline-offset:1px;}
+
+  @media (max-width:560px){
+    body{padding:32px 14px 60px;}
+    h1{font-size:32px;}
+    .lede{font-size:15.5px;}
+    .panel{padding:18px 16px;}
+    .pillars{gap:8px;}
+    .pillar{padding:14px 6px;}
+    .pillar .glyphs{font-size:21px;}
+    .arch-stage{padding:22px 10px 16px;}
+    button.primary{font-size:16px; padding:14px 18px;}
+  }
+
+  .radio-row{display:flex; gap:10px;}
+  @media (max-width:560px){ .radio-row{flex-direction:column;} }
+  .radio-opt{
+    flex:1; display:flex; align-items:center; gap:10px; padding:13px 16px;
+    border:1px solid var(--line); border-radius:9px; cursor:pointer; font-size:15px; background:#fff;
+  }
+  .radio-opt .dot{width:16px; height:16px; border-radius:50%; border:1.5px solid #9a9382; flex:none; position:relative;}
+  .radio-opt.active .dot{border-color:#3b5bdb;}
+  .radio-opt.active .dot::after{content:''; position:absolute; inset:3px; border-radius:50%; background:#3b5bdb;}
+
+  .check-row{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:14px;}
+  .check-row input{width:auto;}
+
+  button.primary{
+    width:100%; margin-top:26px; font-family:'Cormorant Garamond', serif; font-size:17px; font-weight:600; letter-spacing:0.02em;
+    padding:15px 22px; border-radius:9px; border:none; background:var(--ink); color:var(--panel); cursor:pointer;
+  }
+  button.primary:hover{opacity:0.92;}
+
+  .eyebrow{font-size:12.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin:0 0 14px;}
+  .panel p{font-size:15.5px; line-height:1.6; margin:0 0 14px;}
+  .adjust-note{font-size:13.5px; color:var(--muted); margin:-4px 0 18px;}
+
+  .pillars{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:8px;}
+  @media (max-width:560px){ .pillars{grid-template-columns:repeat(2,1fr);} }
+  .pillar{background:var(--lav-bg); border-radius:12px; padding:18px 8px; text-align:center;}
+  .pillar .glyphs{font-family:'Noto Serif SC', serif; font-size:26px; color:var(--lav-dark); line-height:1.25;}
+  .pillar .lbl{font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--lav); margin-top:10px; font-weight:700;}
+  .pillar .meaning{font-size:12.5px; color:#6b6478; margin-top:4px; line-height:1.35;}
+
+  .bars{margin:6px 0 22px;}
+  .bar-row{display:flex; align-items:center; gap:14px; margin-bottom:12px;}
+  .bar-row .name{width:52px; font-size:15px; flex:none;}
+  .bar-track{flex:1; height:9px; border-radius:5px; background:var(--lav-line); overflow:hidden;}
+  .bar-fill{height:100%; background:var(--lav); border-radius:5px;}
+  .bar-row .count{width:20px; text-align:right; font-size:15px; color:var(--muted); flex:none;}
+
+  .explainer{background:var(--lav-bg); border-radius:12px; padding:22px 24px;}
+  .explainer p{font-size:15.5px; line-height:1.65; margin:0 0 16px;}
+  .explainer p:last-child{margin-bottom:0;}
+  .explainer b{color:var(--lav-dark); font-weight:700;}
+
+  .pendant-panel .eyebrow{margin-bottom:20px;}
+  .pendant-block{margin-bottom:36px;}
+  .pendant-block:last-child{margin-bottom:0;}
+  .arch-stage{
+    position:relative; background:linear-gradient(180deg,#e9e3d3,#ddd4bd);
+    box-shadow:inset 0 2px 6px rgba(0,0,0,0.09);
+    border:1px solid var(--line); border-radius:200px 200px 16px 16px;
+    padding:34px 20px 22px; display:flex; justify-content:center;
+  }
+  svg{display:block; max-width:100%; height:auto;}
+  .pendant-caption{text-align:center; font-size:14.5px; color:var(--muted); margin-top:12px;}
+
+  .word-choices{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:14px;}
+  .word-chip{
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:8px 12px; border:1px solid var(--line); border-radius:9px;
+    background:#fff; cursor:pointer; min-width:56px;
+  }
+  .word-chip .glyph{font-family:'Ma Shan Zheng', serif; font-size:24px; line-height:1;}
+  .word-chip .pinyin{font-size:10.5px; color:var(--muted);}
+  .word-chip.active{border-color:var(--ink); box-shadow:0 0 0 1px var(--ink); background:var(--lav-bg);}
+  .word-chip:hover{border-color:#b7ae98;}
+
+  .result{display:none;}
+  .result.show{display:block;}
+  .print-only{display:none;}
+
+  @media print{
+    body *{visibility:hidden;}
+    #printSummary, #printSummary *{visibility:visible;}
+    #printSummary{
+      display:block; position:absolute; top:0; left:0; width:100%;
+      padding:20px; font-family:'Cormorant Garamond', serif;
+    }
+    #printSummary h2{font-size:22px; margin:0 0 16px;}
+    #printSummary table{width:100%; border-collapse:collapse; margin-bottom:24px;}
+    #printSummary td{padding:8px 4px; border-bottom:1px solid #ddd; font-size:15px;}
+    #printSummary td:first-child{color:#777; width:160px;}
+    .print-pendants{display:flex; gap:40px;}
+    .print-pendants > div{text-align:center;}
+    .print-pendants svg{width:260px; height:auto;}
+    .print-pendants p{font-size:13px; color:#777; margin-top:8px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Find your BaZi.<br>See your pendant.</h1>
+  <p class="lede">Enter your birth details for a free, automated Four Pillars (BaZi) reading, and preview a jade name pendant matched to your chart.</p>
+
+  <!-- ================= FORM ================= -->
+  <div class="panel">
+    <label>Engrave in</label>
+    <div class="radio-row" id="scriptRow">
+      <div class="radio-opt" data-script="cn"><span class="dot"></span> Chinese name (1 character)</div>
+      <div class="radio-opt active" data-script="en"><span class="dot"></span> English name (full, horizontal)</div>
+    </div>
+
+    <label for="nameInput">Your name</label>
+    <input id="nameInput" type="text" value="angelina">
+    <p class="helper">This is the name traced onto the front of the jade.</p>
+
+    <label for="birthDate">Date of birth</label>
+    <input type="date" id="birthDate">
+
+    <label for="birthTime">Time of birth</label>
+    <input type="time" id="birthTime" value="12:00">
+    <div class="check-row">
+      <input type="checkbox" id="timeUnknown">
+      <label for="timeUnknown" style="margin:0; font-weight:400; font-size:14px;">I don't know my birth time</label>
+    </div>
+    <p class="helper">Time sharpens the reading, but it isn't required.</p>
+
+    <label for="countrySelect">Country of birth</label>
+    <select id="countrySelect">
+      <option value="singapore" selected>Singapore</option>
+      <option value="malaysia">Malaysia (Kuala Lumpur)</option>
+      <option value="hongkong">Hong Kong</option>
+      <option value="china-beijing">China — Beijing</option>
+      <option value="china-shanghai">China — Shanghai</option>
+      <option value="taiwan">Taiwan</option>
+      <option value="japan">Japan</option>
+      <option value="southkorea">South Korea</option>
+      <option value="thailand">Thailand</option>
+      <option value="indonesia">Indonesia</option>
+      <option value="philippines">Philippines</option>
+      <option value="uk">United Kingdom</option>
+      <option value="us-east">United States — East (New York)</option>
+      <option value="us-west">United States — West (Los Angeles)</option>
+      <option value="australia">Australia (Sydney)</option>
+    </select>
+
+    <label for="tzSelect">Time zone at birth</label>
+    <select id="tzSelect"></select>
+    <p class="helper">Time zone is set automatically from country of birth — used to correct for the exact longitude, since the hour pillar depends on that, not just the clock time.</p>
+
+    <label>Gender</label>
+    <div class="radio-row" id="genderRow">
+      <div class="radio-opt active" data-gender="female"><span class="dot"></span> Female</div>
+      <div class="radio-opt" data-gender="male"><span class="dot"></span> Male</div>
+    </div>
+    <p class="helper">Doesn't change your Day Master or lucky element — those are gender-neutral in this reading.</p>
+
+    <button class="primary" id="calcBtn">Reveal my BaZi</button>
+  </div>
+
+  <!-- ================= RESULTS ================= -->
+  <div class="result" id="baziResult">
+
+    <div class="panel">
+      <p class="eyebrow">Your Four Pillars</p>
+      <p>BaZi reads your birth as four pairs — Year, Month, Day, and Hour — each pair a Heavenly Stem over an Earthly Branch. Each character carries one of five elements (Wood, Fire, Earth, Metal, Water), and the mix across all eight is what the rest of this reading is based on.</p>
+      <p class="adjust-note" id="adjustNote"></p>
+      <div class="pillars" id="pillarsGrid"></div>
+    </div>
+
+    <div class="panel">
+      <p class="eyebrow">Five Element Balance</p>
+      <p>The Five Elements (Wood, Fire, Earth, Metal, Water) sit in a cycle: each one <b>generates</b> the next (Wood feeds Fire, Fire leaves Earth as ash, Earth bears Metal, Metal collects Water, Water nourishes Wood) and <b>controls</b> the one two steps ahead (Wood breaks Earth, Earth dams Water, Water douses Fire, Fire melts Metal, Metal chops Wood). Everything below is built on that cycle.</p>
+      <p>The bars count each of your eight chart characters — the Heavenly Stem and Earthly Branch of all four pillars — by which element it belongs to. For simplicity, this reading counts only each branch's dominant element; branches actually carry one to three "hidden stems" (藏干) with secondary elements too, which a full professional reading weighs in as well.</p>
+      <p style="font-size:13.5px; color:var(--muted);">A tall bar isn't "good" and a short one isn't "bad" on its own — what matters is how each element relates to your Day Master, which is what the rest of this panel works out.</p>
+      <div class="bars" id="bars"></div>
+      <div class="explainer" id="explainer"></div>
+    </div>
+
+    <div class="panel pendant-panel">
+      <p class="eyebrow">Pendant Preview</p>
+      <div class="check-row" style="margin-top:0;">
+        <input type="checkbox" id="skipEngraving">
+        <label for="skipEngraving" style="margin:0; font-weight:400; font-size:14px;">Leave the back plain — don't engrave the lucky element</label>
+      </div>
+
+      <div class="pendant-block" style="margin-top:20px;">
+        <div class="arch-stage"><div id="frontSvg"></div></div>
+        <p class="pendant-caption">Front — your name</p>
+      </div>
+      <div class="pendant-block">
+        <div class="arch-stage"><div id="backSvg"></div></div>
+        <p class="pendant-caption" id="backCaption">Back — your lucky element, engraved on the reverse</p>
+        <div id="wordChoices" class="word-choices"></div>
+      </div>
+
+      <button class="primary" id="pdfBtn" style="margin-top:24px;">Download PDF of final choices</button>
+      <p class="helper">Opens your browser's print dialog — choose "Save as PDF" as the destination. Only the engraving choices below are included; no birth date, time, or gender.</p>
+    </div>
+
+    <!-- Print-only order summary: intentionally excludes birth date/time/gender -->
+    <div id="printSummary" class="print-only">
+      <h2>Jade Pendant — Final Choices</h2>
+      <table>
+        <tr><td>Name on front</td><td id="psName"></td></tr>
+        <tr><td>Script</td><td id="psScript"></td></tr>
+        <tr><td>Jade color</td><td id="psColor"></td></tr>
+        <tr><td>Chain metal</td><td id="psMetal"></td></tr>
+        <tr><td>Back engraving</td><td id="psBack"></td></tr>
+      </table>
+      <div class="print-pendants">
+        <div>
+          <div id="psFront"></div>
+          <p>Front</p>
+        </div>
+        <div>
+          <div id="psBackSvg"></div>
+          <p>Back</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="eyebrow">Want this checked by a professional?</p>
+      <p>This reading is automated: fixed solar-term dates instead of exact yearly boundaries, main-qi-only element counting, and a simplified strong/weak rule rather than full seasonal weighting. It's built to choose a sensible engraving, not to replace an actual consultation.</p>
+      <p>If you'd like a professional BaZi reader to verify this chart before it's engraved, leave your details and I will pass your contact to a professional to contact you.</p>
+      <label for="reqName">Name</label>
+      <input id="reqName" type="text" placeholder="Your name">
+      <label for="reqEmail">Email</label>
+      <input id="reqEmail" type="text" placeholder="you@example.com">
+      <button class="primary" id="reqBtn" style="background:var(--lav-dark);">Request a professional reading</button>
+      <p class="helper" id="reqStatus"></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   TIMEZONE + PLACE (for true solar time correction)
+   ========================================================= */
+const TZ_OFFSETS = [
+  -12,-11,-10,-9,-8,-7,-6,-5,-4,-3.5,-3,-2,-1,0,
+  1,2,3,3.5,4,4.5,5,5.5,5.75,6,6.5,7,8,8.75,9,9.5,10,10.5,11,12,12.75,13,14
+];
+function fmtOffset(o){
+  const sign = o>=0 ? '+' : '-';
+  const abs = Math.abs(o);
+  const h = Math.floor(abs);
+  const m = Math.round((abs-h)*60);
+  return `UTC${sign}${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+const tzSelect = document.getElementById('tzSelect');
+TZ_OFFSETS.forEach(o=>{
+  const opt = document.createElement('option');
+  opt.value = o; opt.textContent = fmtOffset(o);
+  if (o===8) opt.selected = true;
+  tzSelect.appendChild(opt);
+});
+
+// Known city -> longitude (°E) and standard UTC offset, for true solar time
+// correction AND to auto-fill the timezone field. If the entered city isn't
+// recognized, timezone stays whatever the person picked and no longitude
+// correction is applied beyond standard zone time.
+const COUNTRY_INFO = {
+  'singapore':      { label:'Singapore',                          lon:103.8,  offset:8  },
+  'malaysia':       { label:'Malaysia (Kuala Lumpur)',             lon:101.7,  offset:8  },
+  'hongkong':       { label:'Hong Kong',                           lon:114.1,  offset:8  },
+  'china-beijing':  { label:'China — Beijing',                     lon:116.4,  offset:8  },
+  'china-shanghai': { label:'China — Shanghai',                    lon:121.5,  offset:8  },
+  'taiwan':         { label:'Taiwan',                              lon:121.5,  offset:8  },
+  'japan':          { label:'Japan',                               lon:139.7,  offset:9  },
+  'southkorea':     { label:'South Korea',                         lon:126.9,  offset:9  },
+  'thailand':       { label:'Thailand',                            lon:100.5,  offset:7  },
+  'indonesia':      { label:'Indonesia (Jakarta)',                 lon:106.8,  offset:7  },
+  'philippines':    { label:'Philippines',                         lon:121.0,  offset:8  },
+  'uk':             { label:'United Kingdom',                      lon:-0.1,   offset:0  },
+  'us-east':        { label:'United States — East (New York)',     lon:-74.0,  offset:-5 },
+  'us-west':        { label:'United States — West (Los Angeles)',  lon:-118.2, offset:-8 },
+  'australia':      { label:'Australia (Sydney)',                  lon:151.2,  offset:10 },
+};
+
+const countrySelect = document.getElementById('countrySelect');
+function syncTimezoneToCountry(){
+  try {
+    const info = COUNTRY_INFO[countrySelect.value];
+    if (!info) return;
+    const targetValue = String(info.offset);
+    for (let i=0; i<tzSelect.options.length; i++){
+      if (tzSelect.options[i].value === targetValue){
+        tzSelect.selectedIndex = i;
+        break;
+      }
+    }
+  } catch (err) {
+    console.error('syncTimezoneToCountry failed:', err);
+  }
+}
+countrySelect.addEventListener('change', syncTimezoneToCountry);
+try { syncTimezoneToCountry(); } catch(err) { console.error('initial sync failed:', err); }
+
+/* =========================================================
+   BAZI CALCULATION
+   ========================================================= */
+const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const STEM_PINYIN = ['Jiǎ','Yǐ','Bǐng','Dīng','Wù','Jǐ','Gēng','Xīn','Rén','Guǐ'];
+const STEM_ELEMENT = ['wood','wood','fire','fire','earth','earth','metal','metal','water','water'];
+const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const BRANCH_PINYIN = ['Zǐ','Chǒu','Yín','Mǎo','Chén','Sì','Wǔ','Wèi','Shēn','Yǒu','Xū','Hài'];
+const BRANCH_ELEMENT = ['water','earth','wood','wood','earth','fire','fire','earth','metal','metal','earth','water'];
+
+const EL_LABEL = { wood:'Wood', fire:'Fire', earth:'Earth', metal:'Metal', water:'Water' };
+const EL_CHAR  = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
+const EL_TRAITS = {
+  wood:'growth, vision, flexibility', fire:'passion, expression, warmth',
+  earth:'stability, trust, groundedness', metal:'discipline, clarity, structure',
+  water:'wisdom, adaptability, depth'
+};
+const GENERATES = { wood:'fire', fire:'earth', earth:'metal', metal:'water', water:'wood' };
+const GENERATED_BY = { fire:'wood', earth:'fire', metal:'earth', water:'metal', wood:'water' };
+// Each entry is a radical-based 五行补字 option — a character carrying that
+// element's own radical (often doubled/tripled for emphasis) rather than
+// just naming the element abstractly. First in each list is the default.
+const LUCKY_WORDS = {
+  wood: [
+    { char:'楠', name:'Nán',  note:'nanmu tree — carries the 木 radical directly' },
+    { char:'榕', name:'Róng', note:'banyan tree — carries the 木 radical directly' },
+    { char:'森', name:'Sēn',  note:'forest — three 木 radicals stacked' },
+    { char:'林', name:'Lín',  note:'grove — two 木 radicals' },
+    { char:'栋', name:'Dòng', note:"ridgepole, a household's mainstay — carries the 木 radical" },
+  ],
+  fire: [
+    { char:'烨', name:'Yè',   note:'blazing brightness — carries the 火 radical directly' },
+    { char:'焱', name:'Yàn',  note:'blazing flames — three 火 radicals stacked' },
+    { char:'熠', name:'Yì',   note:'brilliant glow — carries the 火 radical directly' },
+    { char:'煜', name:'Yù',   note:'sunlight, shining — carries the 火 radical directly' },
+    { char:'炜', name:'Wěi',  note:'bright, lustrous — carries the 火 radical directly' },
+  ],
+  earth: [
+    { char:'垚', name:'Yáo',  note:'mounded, solid earth — three 土 radicals stacked' },
+    { char:'坤', name:'Kūn',  note:'the earth trigram — receptive, nurturing ground' },
+    { char:'培', name:'Péi',  note:'to cultivate, nurture — carries the 土 radical' },
+    { char:'城', name:'Chéng',note:'city, rampart — carries the 土 radical' },
+    { char:'均', name:'Jūn',  note:'even, balanced — carries the 土 radical' },
+  ],
+  metal: [
+    { char:'鑫', name:'Xīn',  note:'abundance of gold — three 金 radicals, also read as prosperity' },
+    { char:'铭', name:'Míng', note:'to inscribe, engrave — carries the 金 radical' },
+    { char:'锐', name:'Ruì',  note:'sharp, keen — carries the 金 radical' },
+    { char:'钰', name:'Yù',   note:'a precious metal or gem — carries the 金 radical' },
+    { char:'锋', name:'Fēng', note:"a blade's edge, vanguard — carries the 金 radical" },
+  ],
+  water: [
+    { char:'淼', name:'Miǎo', note:'vast, flowing water — three 水 radicals stacked' },
+    { char:'涵', name:'Hán',  note:'to contain, cultivate — carries the 水 radical' },
+    { char:'润', name:'Rùn',  note:'moist, to nourish — carries the 水 radical' },
+    { char:'泽', name:'Zé',   note:'beneficence, a marsh — carries the 水 radical' },
+    { char:'清', name:'Qīng', note:'clear, pure — carries the 水 radical' },
+  ],
+};
+const COLOR_NAME = { fire:'Purple', wood:'Green', water:'Black', metal:'White', earth:'Yellow' };
+const SWATCH_COLOR = { fire:'#d7bfe8', wood:'#a9d7bd', water:'#3a3a3f', metal:'#eef0ee', earth:'#e8d494' };
+const PILLAR_MEANING = {
+  year:'Ancestry & early life', month:"Career & the chart's season",
+  day:'Your core self', hour:'Later life & inner drive'
+};
+
+function monthBranchFromDate(month, day){
+  const md = month*100 + day;
+  if (md>=204 && md<306) return 2;
+  if (md>=306 && md<405) return 3;
+  if (md>=405 && md<506) return 4;
+  if (md>=506 && md<606) return 5;
+  if (md>=606 && md<707) return 6;
+  if (md>=707 && md<808) return 7;
+  if (md>=808 && md<908) return 8;
+  if (md>=908 && md<1008) return 9;
+  if (md>=1008 && md<1107) return 10;
+  if (md>=1107 && md<1207) return 11;
+  if (md>=1207 || md<106) return 0;
+  return 1;
+}
+
+function computeBazi(year, month, day, hour){
+  const beforeLichun = (month<2) || (month===2 && day<4);
+  const baziYear = beforeLichun ? year-1 : year;
+  const yearOffset = baziYear - 1984;
+  const yearStem = ((yearOffset%10)+10)%10;
+  const yearBranch = ((yearOffset%12)+12)%12;
+
+  const monthBranch = monthBranchFromDate(month, day);
+  const monthStemStartByGroup = [2,4,6,8,0];
+  const monthStemStart = monthStemStartByGroup[yearStem%5];
+  const monthOffset = ((monthBranch-2+12)%12);
+  const monthStem = (monthStemStart + monthOffset) % 10;
+
+  // The ganzhi DAY changes at 23:00, not civil midnight — 子時 (23:00-00:59)
+  // already belongs to the next day's pillar even though the calendar date
+  // hasn't turned over yet. Year/Month pillars are unaffected by this.
+  const dayPillarMs = Date.UTC(year, month-1, day) + (hour===23 ? 86400000 : 0);
+  const ref = Date.UTC(1900,0,31);
+  const dayDiff = Math.round((dayPillarMs-ref)/86400000);
+  const dayStem = ((dayDiff%10)+10)%10;
+  const dayBranch = ((dayDiff%12)+12)%12;
+
+  const hourBranch = Math.floor(((hour+1)%24)/2);
+  const hourStemStartByGroup = [0,2,4,6,8];
+  const hourStem = (hourStemStartByGroup[dayStem%5] + hourBranch) % 10;
+
+  return {
+    year:{stem:yearStem, branch:yearBranch},
+    month:{stem:monthStem, branch:monthBranch},
+    day:{stem:dayStem, branch:dayBranch},
+    hour:{stem:hourStem, branch:hourBranch}
+  };
+}
+
+function pillarHTML(key, p){
+  return `<div class="pillar">
+    <div class="glyphs">${STEMS[p.stem]}<br>${BRANCHES[p.branch]}</div>
+    <div class="lbl">${key}</div>
+    <div class="meaning">${PILLAR_MEANING[key.toLowerCase()]}</div>
+  </div>`;
+}
+
+let selectedGender = 'female';
+document.getElementById('genderRow').addEventListener('click', (e)=>{
+  const opt = e.target.closest('.radio-opt');
+  if(!opt) return;
+  selectedGender = opt.dataset.gender;
+  document.querySelectorAll('#genderRow .radio-opt').forEach(o=>o.classList.remove('active'));
+  opt.classList.add('active');
+});
+
+document.getElementById('scriptRow').addEventListener('click', (e)=>{
+  const opt = e.target.closest('.radio-opt');
+  if(!opt) return;
+  nameScript = opt.dataset.script;
+  document.querySelectorAll('#scriptRow .radio-opt').forEach(o=>o.classList.remove('active'));
+  opt.classList.add('active');
+  const input = document.getElementById('nameInput');
+  if (nameScript==='cn' && !/^[\u4e00-\u9fff]$/.test(input.value)) input.value = '珍';
+  if (nameScript==='en' && !/^[a-zA-Z]+$/.test(input.value)) input.value = 'angelina';
+  if (document.getElementById('baziResult').classList.contains('show')) render();
+});
+
+document.getElementById('calcBtn').addEventListener('click', ()=>{
+  const dateVal = document.getElementById('birthDate').value;
+  if(!dateVal){ alert('Please enter a date of birth.'); return; }
+  let [y,m,d] = dateVal.split('-').map(Number);
+  const unknown = document.getElementById('timeUnknown').checked;
+  let hour = 12, minute = 0;
+  if(!unknown){
+    const tVal = document.getElementById('birthTime').value || '12:00';
+    const parts = tVal.split(':').map(Number);
+    hour = parts[0]; minute = parts[1] || 0;
+  }
+
+  const offsetHours = parseFloat(document.getElementById('tzSelect').value);
+  const countryInfo = COUNTRY_INFO[document.getElementById('countrySelect').value];
+  const countryLabel = countryInfo.label;
+  const longitude = countryInfo.lon;
+
+  let correctionMinutes = 0;
+  if (!unknown){
+    const standardMeridian = offsetHours * 15;
+    correctionMinutes = Math.round((longitude - standardMeridian) * 4);
+    let totalMinutes = hour*60 + minute + correctionMinutes;
+    const dayMs = 86400000;
+    let dateObj = new Date(Date.UTC(y, m-1, d));
+    if (totalMinutes < 0){ totalMinutes += 1440; dateObj = new Date(dateObj.getTime()-dayMs); }
+    else if (totalMinutes >= 1440){ totalMinutes -= 1440; dateObj = new Date(dateObj.getTime()+dayMs); }
+    y = dateObj.getUTCFullYear(); m = dateObj.getUTCMonth()+1; d = dateObj.getUTCDate();
+    hour = Math.floor(totalMinutes/60); minute = totalMinutes%60;
+  }
+
+  const bazi = computeBazi(y,m,d,hour);
+  document.getElementById('pillarsGrid').innerHTML =
+    pillarHTML('Year', bazi.year) + pillarHTML('Month', bazi.month) +
+    pillarHTML('Day', bazi.day) +
+    (unknown ? `<div class="pillar" style="opacity:0.5;"><div class="glyphs">— —</div><div class="lbl">Hour</div><div class="meaning">Unknown</div></div>` : pillarHTML('Hour', bazi.hour));
+
+  document.getElementById('adjustNote').textContent = unknown
+    ? 'Hour pillar omitted — birth time unknown.'
+    : `Adjusted ${correctionMinutes>=0?'+':''}${correctionMinutes} min for ${countryLabel}'s exact longitude vs. the standard time zone meridian.`;
+
+  const dmElement = STEM_ELEMENT[bazi.day.stem];
+  const others = [
+    STEM_ELEMENT[bazi.year.stem], BRANCH_ELEMENT[bazi.year.branch],
+    STEM_ELEMENT[bazi.month.stem], BRANCH_ELEMENT[bazi.month.branch],
+    BRANCH_ELEMENT[bazi.day.branch]
+  ];
+  if(!unknown){ others.push(STEM_ELEMENT[bazi.hour.stem], BRANCH_ELEMENT[bazi.hour.branch]); }
+  const supportCount = others.filter(e => e===dmElement || e===GENERATED_BY[dmElement]).length;
+  const threshold = others.length >= 7 ? 4 : 3;
+  const strong = supportCount >= threshold;
+  const recommended = strong ? GENERATES[dmElement] : GENERATED_BY[dmElement];
+
+  const allTokens = [
+    STEM_ELEMENT[bazi.year.stem], BRANCH_ELEMENT[bazi.year.branch],
+    STEM_ELEMENT[bazi.month.stem], BRANCH_ELEMENT[bazi.month.branch],
+    dmElement, BRANCH_ELEMENT[bazi.day.branch]
+  ];
+  if(!unknown){ allTokens.push(STEM_ELEMENT[bazi.hour.stem], BRANCH_ELEMENT[bazi.hour.branch]); }
+  const counts = { wood:0, fire:0, earth:0, metal:0, water:0 };
+  allTokens.forEach(e => counts[e]++);
+  const totalTokens = allTokens.length;
+  document.getElementById('bars').innerHTML = Object.keys(counts).map(k=>`
+    <div class="bar-row">
+      <div class="name">${EL_LABEL[k]}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(counts[k]/totalTokens)*100}%;"></div></div>
+      <div class="count">${counts[k]}</div>
+    </div>`).join('');
+
+  const nw = LUCKY_WORDS[recommended][0];
+  const dmReading = `${STEMS[bazi.day.stem]}${BRANCHES[bazi.day.branch]} (${STEM_PINYIN[bazi.day.stem]} ${BRANCH_PINYIN[bazi.day.branch]})`;
+  const roleTerm = strong ? "Output element (食伤 shí shāng)" : "Resource element (印 yìn)";
+  document.getElementById('explainer').innerHTML = `
+    <p><b>What's a Day Master?</b> It's the Heavenly Stem of your Day pillar — the element considered the core "you" in the chart, everything else is read in relation to it.</p>
+    <p>Every other element in the chart plays one of five roles relative to the Day Master (the "Ten Gods," 十神, so called because each role splits into a Yin and Yang version): the <b>same element</b> (companion, 比劫), the element that <b>generates</b> it (resource, 印), the element <b>it generates</b> (output, 食伤), the element <b>it controls</b> (wealth, 财), and the element <b>that controls it</b> (officer, 官杀). Whether the Day Master is strong or weak decides which of these roles the chart actually needs more of.</p>
+    <p>Your Day pillar is <b>${dmReading}</b> — a <b>${strong?'strong':'weak'} ${EL_LABEL[dmElement]}</b> Day Master (${EL_TRAITS[dmElement]}) in this chart. That means this element is ${strong?'reinforced by':'outnumbered by'} the others in the chart, so it benefits from an element that ${strong?'channels and balances it':'feeds and supports it'}, to bring things back toward balance.</p>
+    <div style="display:flex; align-items:center; gap:12px; margin:-4px 0 16px;">
+      <div style="width:26px; height:26px; border-radius:50%; flex:none; border:1px solid rgba(0,0,0,0.15); background:${SWATCH_COLOR[recommended]};"></div>
+      <p style="margin:0; font-size:15.5px;">That already points to your jade color: <b>${COLOR_NAME[recommended]}</b> (${EL_LABEL[recommended]} jade) — here's why.</p>
+    </div>
+    <p><b>What's a favorable element?</b> It's not "your element" — it's whichever element the chart needs more of right now to balance the Day Master, which is why it can differ from person to person even with the same Day Master. Here, that's the <b>${roleTerm}</b>: ${strong ? 'it gives a strong Day Master somewhere to direct its excess, rather than letting it pile up unchecked' : 'it feeds a weak Day Master directly, the most straightforward way to strengthen it'}.</p>
+    <p>Your favorable element for this reading is <b>${EL_LABEL[recommended]}</b> (${EL_TRAITS[recommended]}).</p>
+    <p><b>Why ${nw.char}, specifically?</b> Rather than naming the element abstractly, this uses a tradition from Chinese naming practice (五行补字) where a character containing the element's own radical — sometimes doubled or tripled for emphasis — is chosen to reinforce that element directly. <b>${nw.char} (${nw.name})</b> — ${nw.note} — is the default pick here, but it's one of several valid choices for ${EL_LABEL[recommended]} — pick a different one below the pendant preview if you'd prefer.</p>
+  `;
+
+  document.getElementById('reqBtn').onclick = ()=>{
+    const name = document.getElementById('nameInput').value.trim();
+    const genderLbl = selectedGender==='male' ? 'Male' : 'Female';
+    const summary =
+`BaZi verification request
+
+Name: ${name}
+Gender: ${genderLbl}
+Date of birth: ${document.getElementById('birthDate').value}
+Time of birth: ${unknown ? 'Unknown' : document.getElementById('birthTime').value}
+Country of birth: ${countryLabel}
+
+Four Pillars: ${STEMS[bazi.year.stem]}${BRANCHES[bazi.year.branch]} / ${STEMS[bazi.month.stem]}${BRANCHES[bazi.month.branch]} / ${STEMS[bazi.day.stem]}${BRANCHES[bazi.day.branch]} / ${unknown?'(hour unknown)':STEMS[bazi.hour.stem]+BRANCHES[bazi.hour.branch]}
+Day Master: ${EL_LABEL[dmElement]} (${strong?'strong':'weak'})
+Automated favorable element: ${EL_LABEL[recommended]}`;
+    const subject = encodeURIComponent(`BaZi reading request — ${name || 'unnamed'}`);
+    const body = encodeURIComponent(summary);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    document.getElementById('reqStatus').textContent = 'Your email client should open with the chart pre-filled — just add a recipient and send.';
+  };
+
+  document.getElementById('baziResult').classList.add('show');
+
+  currentElement = recommended;
+  luckyWordChar = nw.char;
+  renderWordChoices();
+  render();
+  document.getElementById('baziResult').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+document.getElementById('nameInput').addEventListener('input', ()=>{
+  if (document.getElementById('baziResult').classList.contains('show')) render();
+});
+
+document.getElementById('skipEngraving').addEventListener('change', (e)=>{
+  document.getElementById('backCaption').textContent = e.target.checked
+    ? 'Back — left plain'
+    : 'Back — your lucky element, engraved on the reverse';
+  if (document.getElementById('baziResult').classList.contains('show')) render();
+});
+
+document.getElementById('pdfBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('nameInput').value.trim() || 'name';
+  const skip = document.getElementById('skipEngraving').checked;
+  const elLabel = ELEMENTS[currentElement].label;
+  const colorLabel = COLOR_NAME[currentElement];
+
+  document.getElementById('psName').textContent = name;
+  document.getElementById('psScript').textContent = nameScript === 'cn' ? 'Chinese (1 character)' : 'English (full name)';
+  document.getElementById('psColor').textContent = `${colorLabel} (${elLabel} jade)`;
+  document.getElementById('psMetal').textContent = currentMetal === 'gold' ? 'Gold' : 'Silver';
+  document.getElementById('psBack').textContent = skip ? 'Left plain — no engraving' : `${luckyWordChar} (lucky word, ${elLabel})`;
+
+  // clone the current live pendant previews so print shows exactly what was chosen
+  document.getElementById('psFront').innerHTML = document.getElementById('frontSvg').innerHTML;
+  document.getElementById('psBackSvg').innerHTML = document.getElementById('backSvg').innerHTML;
+
+  window.print();
+});
+
+/* =========================================================
+   PENDANT GEOMETRY (front traces the name; back is the same
+   jade mirrored, with the lucky word inset lower-right)
+   ========================================================= */
+const ELEMENTS = {
+  fire:  { label:'Fire',  color:'#d7bfe8', shade:'#9f75bd', highlight:'#f1e4fa' },
+  wood:  { label:'Wood',  color:'#a9d7bd', shade:'#5e9b76', highlight:'#dcf2e4' },
+  water: { label:'Water', color:'#3a3a3f', shade:'#232326', highlight:'#5c5c63' },
+  metal: { label:'Metal', color:'#e4e7e5', shade:'#8f979a', highlight:'#ffffff' },
+  earth: { label:'Earth', color:'#e0c67e', shade:'#a9803a', highlight:'#f7ecc4' },
+};
+let currentElement = 'earth';
+let currentMetal = 'gold';
+let nameScript = 'en';
+let luckyWordChar = '垚';
+
+function renderWordChoices(){
+  const wrap = document.getElementById('wordChoices');
+  const options = LUCKY_WORDS[currentElement] || [];
+  wrap.innerHTML = options.map(w => `
+    <div class="word-chip ${w.char===luckyWordChar?'active':''}" data-char="${w.char}" title="${w.note}">
+      <span class="glyph">${w.char}</span>
+      <span class="pinyin">${w.name}</span>
+    </div>`).join('');
+}
+document.getElementById('wordChoices').addEventListener('click', (e)=>{
+  const chip = e.target.closest('.word-chip');
+  if (!chip) return;
+  luckyWordChar = chip.dataset.char;
+  document.querySelectorAll('.word-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  render();
+});
+
+const CONTOUR_SCALE = 4;
+
+function traceTextContour(str, fontFamily, displayFontSize, padding, paddingX){
+  const hPad = paddingX != null ? paddingX : padding;
+  const text = str || ' ';
+  const cFont = displayFontSize * CONTOUR_SCALE;
+  const margin = cFont * 0.7;
+  const cvHeight = Math.ceil(cFont * 3);
+  const cvWidth = Math.ceil(cFont * text.length * 1.3 + margin * 2);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = cvWidth;
+  canvas.height = cvHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#000';
+  ctx.font = `${cFont}px 'Alex Brush', cursive`;
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+  const baselineY = cFont * 1.6;
+  ctx.fillText(text, margin, baselineY);
+
+  const { data } = ctx.getImageData(0, 0, cvWidth, cvHeight);
+  const top = new Array(cvWidth).fill(null);
+  const bot = new Array(cvWidth).fill(null);
+  for (let x = 0; x < cvWidth; x++) {
+    for (let y = 0; y < cvHeight; y++) {
+      if (data[(y * cvWidth + x) * 4 + 3] > 20) {
+        if (top[x] === null) top[x] = y;
+        bot[x] = y;
+      }
+    }
+  }
+
+  let left = -1, right = -1;
+  for (let x = 0; x < cvWidth; x++) {
+    if (top[x] !== null) { if (left < 0) left = x; right = x; }
+  }
+  if (left < 0) { left = margin; right = margin + cFont; top[left]=baselineY-cFont*0.35; bot[left]=baselineY; top[right]=top[left]; bot[right]=bot[left]; }
+
+  function fillGaps(arr){
+    let lastX = -1, lastV = null;
+    for (let x = left; x <= right; x++){
+      if (arr[x] !== null){
+        if (lastX >= 0 && lastX < x - 1){
+          for (let k = lastX+1; k < x; k++){
+            const t = (k-lastX)/(x-lastX);
+            arr[k] = lastV + (arr[x]-lastV)*t;
+          }
+        }
+        lastX = x; lastV = arr[x];
+      }
+    }
+  }
+  fillGaps(top); fillGaps(bot);
+
+  const span = right - left;
+  const extPx = hPad * CONTOUR_SCALE;
+  const totalSpan = span + extPx*2;
+  const samples = Math.max(20, Math.min(44, Math.round(totalSpan / (cFont*0.16))));
+  const rawTop = [], rawBot = [];
+  for (let i = 0; i <= samples; i++){
+    const xc = left - extPx + (i/samples)*totalSpan;
+    const xi = Math.round(Math.min(right, Math.max(left, xc)));
+    rawTop.push(top[xi]); rawBot.push(bot[xi]);
+  }
+  function smooth(arr){
+    let a = arr.slice();
+    for (let pass=0; pass<7; pass++){
+      const out = a.slice();
+      for (let i=1;i<a.length-1;i++){
+        const prev = a[i-1], cur = a[i], next = a[i+1];
+        out[i] = prev*0.3 + cur*0.4 + next*0.3;
+      }
+      a = out;
+    }
+    return a;
+  }
+  const topS = smooth(rawTop), botS = smooth(rawBot);
+
+  const centerX = (left+right)/2;
+  const pad = padding * CONTOUR_SCALE;
+  const topPts = [], botPts = [];
+  for (let i=0;i<=samples;i++){
+    const xc = left - extPx + (i/samples)*totalSpan;
+    const x = (xc - centerX) / CONTOUR_SCALE;
+    topPts.push({ x, y: (topS[i] - baselineY - pad) / CONTOUR_SCALE });
+    botPts.push({ x, y: (botS[i] - baselineY + pad) / CONTOUR_SCALE });
+  }
+  return {
+    top: topPts,
+    bottom: botPts,
+    width: totalSpan / CONTOUR_SCALE,
+    height: (Math.max(...botS) - Math.min(...topS)) / CONTOUR_SCALE + padding*2
+  };
+}
+
+function mirrorContour(contour){
+  return {
+    top: contour.top.slice().reverse().map(p => ({ x: -p.x, y: p.y })),
+    bottom: contour.bottom.slice().reverse().map(p => ({ x: -p.x, y: p.y })),
+    width: contour.width,
+    height: contour.height
+  };
+}
+
+function contourPath(contour){
+  const top = contour.top, bot = contour.bottom;
+  const cap = 5;
+  let d = `M ${top[0].x} ${top[0].y} `;
+  for (let i=1;i<top.length;i++){
+    const mx=(top[i-1].x+top[i].x)/2, my=(top[i-1].y+top[i].y)/2;
+    d += `Q ${top[i-1].x} ${top[i-1].y} ${mx} ${my} `;
+  }
+  d += `L ${top[top.length-1].x} ${top[top.length-1].y} `;
+  const rt = top[top.length-1], rb = bot[bot.length-1];
+  d += `Q ${rt.x+cap} ${(rt.y+rb.y)/2} ${rb.x} ${rb.y} `;
+  for (let i=bot.length-2;i>=0;i--){
+    const mx=(bot[i+1].x+bot[i].x)/2, my=(bot[i+1].y+bot[i].y)/2;
+    d += `Q ${bot[i+1].x} ${bot[i+1].y} ${mx} ${my} `;
+  }
+  d += `L ${bot[0].x} ${bot[0].y} `;
+  const lt = top[0], lb = bot[0];
+  d += `Q ${lt.x-cap} ${(lt.y+lb.y)/2} ${lt.x} ${lt.y} Z`;
+  return d;
+}
+
+function chainPath(x1,y1,x2,y2, metal){
+  const stroke = metal==='gold' ? '#c7a253' : '#b7bdc4';
+  return `<path d="M ${x1} ${y1} C ${x1-10} ${y1-90}, ${x2+10} ${y2-90}, ${x2} ${y2}"
+            fill="none" stroke="${stroke}" stroke-width="3" stroke-linecap="round"/>`;
+}
+
+function ringPair(w,h){
+  const gap = w*0.36;
+  return { left: -gap/2, right: gap/2, y: -h/2 - h*0.10 };
+}
+
+function squareJadePath(size){
+  const h = size/2, r = size*0.16;
+  return `M ${-h+r} ${-h} L ${h-r} ${-h} Q ${h} ${-h} ${h} ${-h+r} L ${h} ${h-r} Q ${h} ${h} ${h-r} ${h} L ${-h+r} ${h} Q ${-h} ${h} ${-h} ${h-r} L ${-h} ${-h+r} Q ${-h} ${-h} ${-h+r} ${-h} Z`;
+}
+
+function escapeXml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Mobile in-app browsers (Shopify app, IG/FB webviews, etc.) don't always
+// finish loading @font-face fonts before dynamically-inserted SVG <text>
+// gets painted, which can leave the lettering invisible on first render.
+// Force-load the exact fonts we use and wait for confirmation before
+// drawing anything — with a timeout so a failed fetch can't hang forever.
+let fontsReadyPromise = null;
+function ensureFontsLoaded(){
+  if (fontsReadyPromise) return fontsReadyPromise;
+  if (!(document.fonts && document.fonts.load)) { fontsReadyPromise = Promise.resolve(); return fontsReadyPromise; }
+  const specs = ["64px 'Alex Brush'", "64px 'Ma Shan Zheng'", "700 64px 'Noto Serif SC'"];
+  const loads = specs.map(s => document.fonts.load(s).catch(()=>{}));
+  fontsReadyPromise = Promise.race([
+    Promise.all(loads),
+    new Promise(resolve => setTimeout(resolve, 3000))
+  ]);
+  return fontsReadyPromise;
+}
+
+async function render(){
+  await ensureFontsLoaded();
+  try {
+    if (nameScript === 'cn') { renderChinese(); } else { renderEnglish(); }
+  } catch (err) {
+    console.error('Pendant render failed:', err);
+  }
+}
+ensureFontsLoaded(); // start fetching immediately, don't wait for first render
+
+// Fallback measurement that doesn't touch canvas at all — uses SVG's
+// native getBBox() instead, which is far more universally reliable across
+// mobile browsers than canvas pixel-scanning.
+function measureTextBBox(str, fontFamily, fontSize){
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.style.position = 'absolute'; svg.style.left = '-9999px'; svg.style.top = '-9999px';
+  const text = document.createElementNS(svgNS, 'text');
+  text.setAttribute('font-family', fontFamily);
+  text.setAttribute('font-size', fontSize);
+  text.textContent = str || ' ';
+  svg.appendChild(text);
+  document.body.appendChild(svg);
+  const bbox = text.getBBox();
+  document.body.removeChild(svg);
+  return { width: bbox.width || fontSize*str.length*0.5, height: bbox.height || fontSize*0.8 };
+}
+
+// Simple pill/stadium outline, used when canvas-based letterform tracing
+// isn't available — same jump-ring geometry, just a plain rounded shape
+// instead of one hugging the lettering.
+function pillPath(w, h){
+  const r = h/2;
+  return `M ${-w/2+r} ${-h/2} L ${w/2-r} ${-h/2} A ${r} ${r} 0 0 1 ${w/2-r} ${h/2} L ${-w/2+r} ${h/2} A ${r} ${r} 0 0 1 ${-w/2+r} ${-h/2} Z`;
+}
+
+function renderEnglish(){
+  const name = document.getElementById('nameInput').value.trim() || 'name';
+  const elChar = luckyWordChar;
+  const el = ELEMENTS[currentElement];
+
+  const fontSize = 64;
+  const jadeMargin = fontSize * 0.34;
+  const jadeMarginX = fontSize * 0.40;
+
+  let path, backPath, w, h;
+  try {
+    const contour = traceTextContour(name, "'Alex Brush', cursive", fontSize, jadeMargin, jadeMarginX);
+    path = contourPath(contour);
+    const mirrored = mirrorContour(contour);
+    backPath = contourPath(mirrored);
+    w = contour.width; h = contour.height;
+    renderEnglish._mirrored = mirrored; // stash for back-text placement below
+  } catch (err) {
+    console.error('Letterform tracing failed, using plain pill outline instead:', err);
+    const bbox = measureTextBBox(name, "'Alex Brush', cursive", fontSize);
+    w = bbox.width + jadeMarginX*2;
+    h = bbox.height + jadeMargin*2;
+    path = pillPath(w, h);
+    backPath = pillPath(w, h); // symmetric shape, mirroring is a no-op
+    renderEnglish._mirrored = null;
+  }
+  const mirrored = renderEnglish._mirrored;
+  const rings = ringPair(w,h);
+
+  const viewW = Math.max(w+120, 340);
+  const viewH = 300;
+  const cy = viewH*0.72;
+  const cx = viewW/2;
+
+  const shadeId = 'shade-'+currentElement;
+
+  document.getElementById('frontSvg').innerHTML = `
+  <svg viewBox="0 0 ${viewW} ${viewH}" width="${viewW}" height="${viewH}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="${shadeId}f" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${el.highlight}"/>
+        <stop offset="55%" stop-color="${el.color}"/>
+        <stop offset="100%" stop-color="${el.shade}"/>
+      </linearGradient>
+    </defs>
+    <circle cx="${cx+rings.left}" cy="${cy+rings.y}" r="4.5" fill="none" stroke="${currentMetal==='gold'?'#c7a253':'#b7bdc4'}" stroke-width="3"/>
+    <circle cx="${cx+rings.right}" cy="${cy+rings.y}" r="4.5" fill="none" stroke="${currentMetal==='gold'?'#c7a253':'#b7bdc4'}" stroke-width="3"/>
+    ${chainPath(cx+rings.left, cy+rings.y-4, cx-viewW*0.28, 8, currentMetal)}
+    ${chainPath(cx+rings.right, cy+rings.y-4, cx+viewW*0.28, 8, currentMetal)}
+    <g transform="translate(${cx},${cy})">
+      <path d="${path}" fill="url(#${shadeId}f)" stroke="${el.shade}" stroke-width="1.5"/>
+      <text x="0" y="0" text-anchor="middle" font-family="'Alex Brush', cursive"
+            font-size="${fontSize}" fill="${el.shade}" opacity="0.55"
+            transform="translate(1.5,2)">${escapeXml(name)}</text>
+      <text x="0" y="0" text-anchor="middle" font-family="'Alex Brush', cursive"
+            font-size="${fontSize}" fill="${el.highlight}">${escapeXml(name)}</text>
+    </g>
+  </svg>
+  `;
+
+  let ex, ey, elFontSize;
+  if (mirrored) {
+    const bIdx = Math.round((mirrored.bottom.length - 1) * 0.85);
+    const edgeBot = mirrored.bottom[bIdx];
+    const edgeTop = mirrored.top[bIdx];
+    const localSpan = edgeBot.y - edgeTop.y;
+    elFontSize = Math.max(14, Math.min(24, localSpan * 0.5));
+    ex = edgeBot.x - elFontSize*0.58;
+    ey = edgeBot.y - elFontSize*0.5;
+  } else {
+    // pill fallback: place lower-right within the plain rounded shape
+    elFontSize = Math.max(14, Math.min(24, h * 0.4));
+    ex = w*0.5 - elFontSize*1.1;
+    ey = h*0.5 - elFontSize*0.7;
+  }
+
+  const skipEngraving = document.getElementById('skipEngraving').checked;
+  const backTextSvg = skipEngraving ? '' : `
+      <text x="${ex+1.5}" y="${ey+2}" text-anchor="middle" font-family="'Noto Serif SC', serif"
+            font-weight="700" font-size="${elFontSize}" fill="${el.shade}" opacity="0.55">${escapeXml(elChar)}</text>
+      <text x="${ex}" y="${ey}" text-anchor="middle" font-family="'Noto Serif SC', serif"
+            font-weight="700" font-size="${elFontSize}" fill="${el.highlight}">${escapeXml(elChar)}</text>`;
+
+  document.getElementById('backSvg').innerHTML = `
+  <svg viewBox="0 0 ${viewW} ${viewH}" width="${viewW}" height="${viewH}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="${shadeId}b" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${el.highlight}"/>
+        <stop offset="55%" stop-color="${el.color}"/>
+        <stop offset="100%" stop-color="${el.shade}"/>
+      </linearGradient>
+    </defs>
+    <circle cx="${cx+rings.left}" cy="${cy+rings.y}" r="4.5" fill="none" stroke="${currentMetal==='gold'?'#c7a253':'#b7bdc4'}" stroke-width="3"/>
+    <circle cx="${cx+rings.right}" cy="${cy+rings.y}" r="4.5" fill="none" stroke="${currentMetal==='gold'?'#c7a253':'#b7bdc4'}" stroke-width="3"/>
+    ${chainPath(cx+rings.left, cy+rings.y-4, cx-viewW*0.28, 8, currentMetal)}
+    ${chainPath(cx+rings.right, cy+rings.y-4, cx+viewW*0.28, 8, currentMetal)}
+    <g transform="translate(${cx},${cy})">
+      <path d="${backPath}" fill="url(#${shadeId}b)" stroke="${el.shade}" stroke-width="1.5"/>${backTextSvg}
+    </g>
+  </svg>
+  `;
+}
+
+function renderChinese(){
+  const nameCh = (document.getElementById('nameInput').value.trim() || '珍').slice(0,1);
+  const elChar = luckyWordChar;
+  const el = ELEMENTS[currentElement];
+
+  const size = 150;
+  const path = squareJadePath(size);
+  const w = size, h = size;
+  const rings = ringPair(w,h);
+
+  const viewW = 340;
+  const viewH = 300;
+  const cy = viewH*0.68;
+  const cx = viewW/2;
+
+  const shadeId = 'shade-'+currentElement;
+  const nameFontSize = size*0.62;
+
+  document.getElementById('frontSvg').innerHTML = `
+  <svg viewBox="0 0 ${viewW} ${viewH}" width="${viewW}" height="${viewH}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="${shadeId}f" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${el.highlight}"/>
+        <stop offset="55%" stop-color="${el.color}"/>
+        <stop offset="100%" stop-color="${el.shade}"/>
+      </linearGradient>
+    </defs>
+    <circle cx="${cx+rings.left}" cy="${cy+rings.y}" r="4.5" fill="none" stroke="${currentMetal==='gold'?'#c7a253':'#b7bdc4'}" stroke-width="3"/>
+    <circle cx="${cx+rings.right}" cy="${cy+rings.y}" r="4.5" fill="none" stroke="${currentMetal==='gold'?'#c7a253':'#b7bdc4'}" stroke-width="3"/>
+    ${chainPath(cx+rings.left, cy+rings.y-4, cx-viewW*0.28, 8, currentMetal)}
+    ${chainPath(cx+rings.right, cy+rings.y-4, cx+viewW*0.28, 8, currentMetal)}
+    <g transform="translate(${cx},${cy})">
+      <path d="${path}" fill="url(#${shadeId}f)" stroke="${el.shade}" stroke-width="1.5"/>
+      <text x="1.5" y="${size*0.20+2}" text-anchor="middle" font-family="'Ma Shan Zheng', serif"
+            font-size="${nameFontSize}" fill="${el.shade}" opacity="0.55">${escapeXml(nameCh)}</text>
+      <text x="0" y="${size*0.20}" text-anchor="middle" font-family="'Ma Shan Zheng', serif"
+            font-size="${nameFontSize}" fill="${el.highlight}">${escapeXml(nameCh)}</text>
+    </g>
+  </svg>
+  `;
+
+  const elFontSize = size*0.30;
+  const ex = size*0.5 - elFontSize*0.75;
+  const ey = size*0.5 - elFontSize*0.45;
+
+  const skipEngraving = document.getElementById('skipEngraving').checked;
+  const backTextSvg = skipEngraving ? '' : `
+      <text x="${ex+1.5}" y="${ey+2}" text-anchor="middle" font-family="'Ma Shan Zheng', serif"
+            font-size="${elFontSize}" fill="${el.shade}" opacity="0.55">${escapeXml(elChar)}</text>
+      <text x="${ex}" y="${ey}" text-anchor="middle" font-family="'Ma Shan Zheng', serif"
+            font-size="${elFontSize}" fill="${el.highlight}">${escapeXml(elChar)}</text>`;
+
+  document.getElementById('backSvg').innerHTML = `
+  <svg viewBox="0 0 ${viewW} ${viewH}" width="${viewW}" height="${viewH}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="${shadeId}b" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${el.highlight}"/>
+        <stop offset="55%" stop-color="${el.color}"/>
+        <stop offset="100%" stop-color="${el.shade}"/>
+      </linearGradient>
+    </defs>
+    <circle cx="${cx+rings.left}" cy="${cy+rings.y}" r="4.5" fill="none" stroke="${currentMetal==='gold'?'#c7a253':'#b7bdc4'}" stroke-width="3"/>
+    <circle cx="${cx+rings.right}" cy="${cy+rings.y}" r="4.5" fill="none" stroke="${currentMetal==='gold'?'#c7a253':'#b7bdc4'}" stroke-width="3"/>
+    ${chainPath(cx+rings.left, cy+rings.y-4, cx-viewW*0.28, 8, currentMetal)}
+    ${chainPath(cx+rings.right, cy+rings.y-4, cx+viewW*0.28, 8, currentMetal)}
+    <g transform="translate(${cx},${cy})">
+      <path d="${path}" fill="url(#${shadeId}b)" stroke="${el.shade}" stroke-width="1.5"/>${backTextSvg}
+    </g>
+  </svg>
+  `;
+}
+</script>
+</body>
+</html>
